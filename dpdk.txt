@@ -1,0 +1,43 @@
+Configuring the Host and NICs for OVS DPDK Usage
+
+DPDK requires the host system to support hugepages, and the NIC(s) need to be enabled with user-space DPDK poll-mode drivers (PMD).
+
+To enable hugepages and use the VFIO user space driver, append the parameters shown below to GRUB_CMDLINE_LINUX in /etc/default/grub, and then run grub update and reboot the system:
+default_hugepagesz=1G hugepagesz=1G hugepages=16 hugepagesz=2M hugepages=2048 iommu=pt intel_iommu=on isolcpus=1-13,15-27
+===============================
+
+The next step is to mount the hugepages file system and load the vfio-pci user space driver.
+
+sudo mkdir -p /mnt/huge && sudo mkdir -p /mnt/huge_2mb && sudo mount -t hugetlbfs hugetlbfs /mnt/huge && sudo mount -t hugetlbfs none /mnt/huge_2mb -o pagesize=2MB
+sudo modprobe vfio-pci
+
+Also, if pcie GPU is in same iommu group as pcie NIC, disable GPUs drivers for audio and video.
+sudo nano /etc/modprobe.d/blacklist.conf
+  	blacklist nouveau
+	blacklist snd_hda_intel
+	
+==============================
+
+sudo $RTE_SDK/build/app/testpmd -c7 -n3 --vdev=net_pcap0,iface=eth1 --vdev=net_pcap1,iface=eth2 -- -i --nb-cores=2 --nb-ports=2 --total-num-mbufs=2048
+
+================ PKT_GEN =======================
+
+sudo $RTE_SDK/pktgen-dpdk/app/$RTE_TARGET/pktgen -l 0-4 -n 3 -- -P -m "[1:3].0, [2:4].1"
+
+
+============= EXAMPLES ==========
+
+sudo $RTE_SDK/examples/cmdline/$RTE_TARGET/app/cmdline -l 0-3 -n 4
+
+
+sudo $RTE_SDK/examples/ethtool/ethtool-app/$RTE_TARGET/app/ethtool -l 0-3 -n 4
+
+
+sudo $RTE_SDK/examples/exception_path/x86_64-native-linuxapp-gcc/app/exception_path -l 0-3 -n 4 -- -p 3 -i 3 -o c
+
+
+sudo $RTE_SDK/examples/l2fwd/$RTE_TARGET/app/l2fwd –c 0x3 –n 4 -- -p 0x3
+
+sudo $RTE_SDK/examples/skeleton/$RTE_TARGET/app/basicfwd -l 1 -n 4
+
+

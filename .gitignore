@@ -1,0 +1,59 @@
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+*.pyc
+
+# Debug files
+*.dSYM/
+
+# Temporaty text and files
+*~
+Temporary/
+data/
+configs/
+results/
+build/
+staging/
+fbs_headers/
+.vscode/
+flatcc/
+flatbuffers/
+python/data/
+*.gz
+*.npy
+
+#wisdom files
+*.dat
+
+#Protobuf files
+*.pb-c.h
+*.pb-c.c
+
+#Virtual environments
+virtualenv/
